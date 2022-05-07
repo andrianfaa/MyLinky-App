@@ -1,0 +1,49 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-white text-dark-4;
+    @apply font-sans text-base;
+  }
+
+  button {
+    @apply cursor-pointer;
+  }
+
+  button,
+  input {
+    @apply bg-white text-base font-sans;
+    @apply disabled:cursor-not-allowed disabled:opacity-50;
+  }
+}
+
+@layer components {
+  .input {
+    &-base {
+      @apply transition-[border] duration-300 ease-linear;
+      @apply border-[1.5px] py-3 px-5 rounded-md w-full;
+      @apply focus:outline-none focus:border-primary;
+      @apply hover:border-primary;
+    }
+
+    &-error {
+      @apply border-error hover:border-error focus:border-error;
+    }
+  }
+
+  .button {
+    &-base {
+      @apply transition-all duration-300 ease-linear;
+      @apply border-[1.5px] py-3 px-5 rounded-md font-medium;
+    }
+
+    &-primary {
+      @apply bg-primary border-primary text-white;
+      @apply hover:bg-primary-dark hover:border-primary-dark hover:text-white;
+    }
+  }
+}
+
+@import "./animations";
