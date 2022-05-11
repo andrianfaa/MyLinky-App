@@ -22,7 +22,7 @@ export function Button({
   onClick,
   disabled = false,
   type = "button",
-  title = "Button"
+  title = "Button",
 }: ButtonProps): JSX.Element {
   if (type === "submit") {
     return (
@@ -63,7 +63,7 @@ export function ButtonWithIcon({
   showIcon = true,
   icon,
   title = "Button",
-  children
+  children,
 }: ButtonWithIconProps): JSX.Element {
   if (type === "submit") {
     return (
@@ -76,7 +76,9 @@ export function ButtonWithIcon({
         aria-disabled={disabled}
         title={title}
       >
-        {showIcon && icon} {children}
+        {showIcon && icon}
+        {" "}
+        {children}
       </button>
     );
   }
@@ -91,7 +93,9 @@ export function ButtonWithIcon({
       aria-disabled={disabled}
       title={title}
     >
-      {showIcon && icon} {title}
+      {showIcon && icon}
+      {" "}
+      {title}
     </button>
   );
 }

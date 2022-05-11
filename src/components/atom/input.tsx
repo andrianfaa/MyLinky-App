@@ -55,7 +55,7 @@ export function Input({
   maxLength,
   disabled,
   readOnly,
-  title
+  title,
 }: InputProps): JSX.Element {
   return (
     <input
@@ -82,12 +82,14 @@ export function InputGroup({
   targetId,
   isRequired,
   className = "mb-4",
-  children
+  children,
 }: InputGroupProps): JSX.Element {
   return (
     <div className={className}>
       <label className="block text-dark-3 font-medium mb-2" htmlFor={targetId}>
-        {label} {isRequired && <span className="text-error">*</span>}
+        {label}
+        {" "}
+        {isRequired && <span className="text-error">*</span>}
       </label>
       {children}
     </div>
@@ -104,7 +106,9 @@ export function InputWithIcon({ className, renderInput, icon }: InputWithIconPro
   );
 }
 
-export function InputCheckbox({ label, targetId, isRequired, className, disabled }: InputCheckbox): JSX.Element {
+export function InputCheckbox({
+  label, targetId, isRequired, className, disabled,
+}: InputCheckbox): JSX.Element {
   return (
     <div className={className ? `group ${className}` : "flex items-center gap-2"}>
       <div className="relative">

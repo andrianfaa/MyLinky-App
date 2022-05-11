@@ -4,7 +4,9 @@ import type { ReactElement } from "react";
 
 import { Link } from "react-router-dom";
 import { Container } from "../components";
-import { Input, InputCheckbox, InputGroup, InputWithIcon, Button, LoadingIcon, notyf } from "../components/atom";
+import {
+  Input, InputCheckbox, InputGroup, InputWithIcon, Button, LoadingIcon, notyf,
+} from "../components/atom";
 import { emailRegExp, passwordRegExp } from "../constants";
 
 import { LockIcon, EmailIcon } from "../assets/icons";
@@ -34,7 +36,7 @@ export default function Login(): JSX.Element {
   const [isLoading, setLoading] = useState<boolean>(false);
   const [formState, setFormState] = useState<LoginStateProps>({
     email: "",
-    password: ""
+    password: "",
   });
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
@@ -51,7 +53,7 @@ export default function Login(): JSX.Element {
 
     setFormState((prevState) => ({
       ...prevState,
-      [name]: value.trim()
+      [name]: value.trim(),
     }));
   };
 
@@ -97,7 +99,7 @@ export default function Login(): JSX.Element {
       required: true,
       disabled: isLoading,
       value: formState.email,
-      title: "Enter your email"
+      title: "Enter your email",
     },
     {
       name: "password",
@@ -110,8 +112,8 @@ export default function Login(): JSX.Element {
       required: true,
       value: formState.password,
       disabled: isLoading,
-      title: "Enter your password"
-    }
+      title: "Enter your password",
+    },
   ];
 
   return (

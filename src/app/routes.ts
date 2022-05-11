@@ -3,8 +3,8 @@ import Login from "../pages/login";
 const PublicRoutes: RouteConfig[] = [
   {
     path: "/",
-    element: Login
-  }
+    element: Login,
+  },
 ];
 
 export { PublicRoutes };
