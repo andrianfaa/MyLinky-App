@@ -1,11 +1,11 @@
 /* eslint-disable react/button-has-type */
 /* eslint-disable react/require-default-props */
-import type { ReactElement } from "react";
+import type { ReactElement, ReactNode } from "react";
 
 export interface ButtonProps {
   className?: string;
-  title: string | ReactElement;
-  buttonTitle: string;
+  children: ReactNode;
+  title: string;
   onClick: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
   disabled?: boolean;
   type?: string;
@@ -18,11 +18,11 @@ export interface ButtonWithIconProps extends ButtonProps {
 
 export function Button({
   className = "button-base",
-  title = "Button",
+  children,
   onClick,
   disabled = false,
   type = "button",
-  buttonTitle = "Button",
+  title = "Button"
 }: ButtonProps): JSX.Element {
   if (type === "submit") {
     return (
@@ -31,11 +31,11 @@ export function Button({
         type="submit"
         onClick={onClick}
         disabled={disabled}
-        aria-label={buttonTitle}
+        aria-label={title}
         aria-disabled={disabled}
-        title={buttonTitle}
+        title={title}
       >
-        {title}
+        {children}
       </button>
     );
   }
@@ -46,24 +46,24 @@ export function Button({
       type="button"
       onClick={onClick}
       disabled={disabled}
-      aria-label={buttonTitle}
+      aria-label={title}
       aria-disabled={disabled}
-      title={buttonTitle}
+      title={title}
     >
       {title}
     </button>
   );
 }
 
-export function ButtoNWithIcon({
+export function ButtonWithIcon({
   className = "button-base flex items-center justify-center",
-  title = "Button",
   onClick,
   disabled = false,
   type = "button",
   showIcon = true,
   icon,
-  buttonTitle = "Button",
+  title = "Button",
+  children
 }: ButtonWithIconProps): JSX.Element {
   if (type === "submit") {
     return (
@@ -72,13 +72,11 @@ export function ButtoNWithIcon({
         type="submit"
         onClick={onClick}
         disabled={disabled}
-        aria-label={buttonTitle}
+        aria-label={title}
         aria-disabled={disabled}
-        title={buttonTitle}
+        title={title}
       >
-        {showIcon && icon}
-        {" "}
-        {title}
+        {showIcon && icon} {children}
       </button>
     );
   }
@@ -89,13 +87,11 @@ export function ButtoNWithIcon({
       type="button"
       onClick={onClick}
       disabled={disabled}
-      aria-label={buttonTitle}
+      aria-label={title}
       aria-disabled={disabled}
-      title={buttonTitle}
+      title={title}
     >
-      {showIcon && icon}
-      {" "}
-      {title}
+      {showIcon && icon} {title}
     </button>
   );
 }

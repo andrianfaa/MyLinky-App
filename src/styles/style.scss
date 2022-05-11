@@ -1,3 +1,5 @@
+@import "./mixins";
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -22,8 +24,9 @@
 @layer components {
   .input {
     &-base {
-      @apply transition-[border] duration-300 ease-linear;
-      @apply border-[1.5px] py-3 px-5 rounded-md w-full;
+      @include border-default;
+      @apply transition-[border] duration-200 ease-linear;
+      @apply border-[1.5px] py-3 px-5 rounded-xl w-full;
       @apply focus:outline-none focus:border-primary;
       @apply hover:border-primary;
     }
@@ -31,17 +34,54 @@
     &-error {
       @apply border-error hover:border-error focus:border-error;
     }
+
+    &-checkbox {
+      @apply w-[20px] h-[20px] opacity-0 absolute z-0;
+
+      &:disabled {
+        @apply opacity-0 cursor-not-allowed;
+
+        & + .input-checkbox__box {
+          @apply opacity-50 cursor-not-allowed;
+        }
+      }
+
+      &:checked {
+        & + .input-checkbox__box {
+          @apply bg-primary border-primary pl-[1px];
+          background-size: 100%;
+          content: url("data:image/svg+xml,%3Csvg width='22' height='22' viewBox='0 0 22 22' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M3 10.2857L8 15.5L18 6' stroke='white' stroke-width='2.5' stroke-linecap='round'/%3E%3C/svg%3E%0A");
+        }
+      }
+
+      &__box {
+        @include border-default;
+        @apply transition-all duration-200 ease-linear;
+        @apply relative block w-[20px] h-[20px] border-[1.5px] rounded-md select-none bg-transparent;
+        @apply hover:border-primary focus:border-primary;
+      }
+    }
   }
 
   .button {
     &-base {
-      @apply transition-all duration-300 ease-linear;
-      @apply border-[1.5px] py-3 px-5 rounded-md font-medium;
+      @include border-default;
+      @apply transition-all duration-200 ease-linear;
+      @apply border-[1.5px] py-3 px-5 rounded-xl font-medium;
     }
 
     &-primary {
       @apply bg-primary border-primary text-white;
       @apply hover:bg-primary-dark hover:border-primary-dark hover:text-white;
+      @apply focus:bg-primary-dark focus:border-primary-dark focus:text-white;
+    }
+  }
+}
+
+@layer utilities {
+  .link {
+    &-primary {
+      @apply text-primary hover:text-primary-dark;
     }
   }
 }

@@ -5,7 +5,7 @@ import type { ReactElement } from "react";
 export interface InputProps {
   type: string;
   name: string;
-  id: string,
+  id: string;
   placeholder: string;
   className?: string;
   value: string;
@@ -17,6 +17,14 @@ export interface InputProps {
   disabled?: boolean;
   readOnly?: boolean;
   title?: string;
+}
+
+export interface InputCheckbox {
+  label?: string;
+  targetId: string;
+  isRequired?: boolean;
+  className?: string;
+  disabled?: boolean;
 }
 
 export interface InputGroupProps {
@@ -47,7 +55,7 @@ export function Input({
   maxLength,
   disabled,
   readOnly,
-  title,
+  title
 }: InputProps): JSX.Element {
   return (
     <input
@@ -74,36 +82,40 @@ export function InputGroup({
   targetId,
   isRequired,
   className = "mb-4",
-  children,
+  children
 }: InputGroupProps): JSX.Element {
   return (
     <div className={className}>
-      <label
-        className="block text-dark-2 font-medium mb-2"
-        htmlFor={targetId}
-      >
-        {label}
-        {" "}
-        {isRequired && <span className="text-error">*</span>}
+      <label className="block text-dark-3 font-medium mb-2" htmlFor={targetId}>
+        {label} {isRequired && <span className="text-error">*</span>}
       </label>
       {children}
     </div>
   );
 }
 
-export function InputWithIcon({
-  className,
-  renderInput,
-  icon,
-}: InputWithIconProps): JSX.Element {
+export function InputWithIcon({ className, renderInput, icon }: InputWithIconProps): JSX.Element {
   return (
     <label className={`flex items-center relative ${className ?? ""}`}>
-      <div className="absolute z-0 left-4">
-        {icon}
-      </div>
+      <div className="absolute z-0 left-4">{icon}</div>
 
       {renderInput}
     </label>
+  );
+}
 
+export function InputCheckbox({ label, targetId, isRequired, className, disabled }: InputCheckbox): JSX.Element {
+  return (
+    <div className={className ? `group ${className}` : "flex items-center gap-2"}>
+      <div className="relative">
+        <input type="checkbox" id={targetId} className="input-checkbox" required={isRequired} disabled={disabled} />
+        <label
+          className="input-checkbox__box group-hover:border-primary group-focus:border-primary"
+          htmlFor={targetId}
+        />
+      </div>
+
+      <label htmlFor={targetId}>{label}</label>
+    </div>
   );
 }

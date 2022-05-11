@@ -2,14 +2,13 @@
 import { useState } from "react";
 import type { ReactElement } from "react";
 
+import { Link } from "react-router-dom";
 import { Container } from "../components";
-import {
-  Input, InputGroup, InputWithIcon, Button, LoadingIcon, notyf,
-} from "../components/atom";
+import { Input, InputCheckbox, InputGroup, InputWithIcon, Button, LoadingIcon, notyf } from "../components/atom";
 import { emailRegExp, passwordRegExp } from "../constants";
 
-import { ReactComponent as MailIcon } from "../assets/icons/ic-email.svg";
-import { ReactComponent as LockIcon } from "../assets/icons/ic-lock.svg";
+import { LockIcon, EmailIcon } from "../assets/icons";
+import { LogoWithText } from "../assets/images";
 
 export interface LoginStateProps {
   email: string;
@@ -35,14 +34,14 @@ export default function Login(): JSX.Element {
   const [isLoading, setLoading] = useState<boolean>(false);
   const [formState, setFormState] = useState<LoginStateProps>({
     email: "",
-    password: "",
+    password: ""
   });
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
     const { name, value } = event.target;
 
-    const testEmail = (name === "email") && new RegExp(emailRegExp).test(value);
-    const testPassword = (name === "password") && new RegExp(passwordRegExp).test(value);
+    const testEmail = name === "email" && new RegExp(emailRegExp).test(value);
+    const testPassword = name === "password" && new RegExp(passwordRegExp).test(value);
 
     if (testEmail || testPassword) {
       event.target.classList.remove("input-error");
@@ -52,7 +51,7 @@ export default function Login(): JSX.Element {
 
     setFormState((prevState) => ({
       ...prevState,
-      [name]: value.trim(),
+      [name]: value.trim()
     }));
   };
 
@@ -91,14 +90,14 @@ export default function Login(): JSX.Element {
       name: "email",
       label: "Email",
       id: "email",
-      icon: <MailIcon />,
+      icon: <EmailIcon />,
       type: "email",
       placeholder: "Enter your email",
       onChange: handleChange,
       required: true,
       disabled: isLoading,
       value: formState.email,
-      title: "Enter your email",
+      title: "Enter your email"
     },
     {
       name: "password",
@@ -111,46 +110,57 @@ export default function Login(): JSX.Element {
       required: true,
       value: formState.password,
       disabled: isLoading,
-      title: "Enter your password",
-    },
+      title: "Enter your password"
+    }
   ];
 
   return (
-    <Container className="min-h-screen w-full p-6 flex justify-center items-center">
-      <form className="w-full max-w-[350px]" onSubmit={handleOnSubmit}>
+    <Container className="min-h-screen max-w-[unset] bg-white sm:bg-primary w-full sm:p-6 flex justify-center items-center">
+      <div className="w-full max-w-[400px] rounded-xl bg-white sm:shadow-lg p-[30px] text-center">
+        <LogoWithText className="scale-150 mx-auto mb-9" />
 
-        {formInput.flatMap((input: FormInput) => (
-          <InputGroup
-            key={input.name}
-            label={input.label}
-            targetId={input.id}
-            isRequired={input.required}
+        <div className="flex items-center justify-between mb-6">
+          <h1 className="text-xl font-semibold text-dark-1">Login</h1>
+          <Link to="/register" className="link-primary font-medium">
+            Register
+          </Link>
+        </div>
+
+        <form onSubmit={handleOnSubmit} className="text-left">
+          {formInput.flatMap((input: FormInput) => (
+            <InputGroup key={input.name} label={input.label} targetId={input.id} isRequired={input.required}>
+              <InputWithIcon
+                className="mb-4 w-full"
+                icon={input.icon}
+                renderInput={
+                  <Input className="pl-12" title={input.title} pattern={input.pattern as string} {...input} />
+                }
+              />
+            </InputGroup>
+          ))}
+
+          <InputCheckbox
+            label="Remember me"
+            targetId="remember-me"
+            className="flex items-center gap-2 mb-4"
+            disabled={isLoading}
+          />
+
+          <Button
+            onClick={() => console.log("clicked")}
+            className="button-base button-primary mb-4 w-full flex justify-center items-center"
+            title={isLoading ? "Loading..." : "Login"}
+            type="submit"
+            disabled={isLoading}
           >
-            <InputWithIcon
-              className="mb-4 w-full"
-              icon={input.icon}
-              renderInput={(
-                <Input
-                  className="pl-12"
-                  title={input.title}
-                  pattern={input.pattern as string}
-                  {...input}
-                />
-              )}
-            />
-          </InputGroup>
-        ))}
+            {isLoading ? <LoadingIcon /> : "Login"}
+          </Button>
+        </form>
 
-        <Button
-          onClick={() => console.log("clicked")}
-          className="button-base button-primary mb-4 w-full flex justify-center items-center"
-          title={isLoading ? <LoadingIcon /> : "Login"}
-          buttonTitle={isLoading ? "Loading..." : "Login"}
-          type="submit"
-          disabled={isLoading}
-        />
-
-      </form>
+        <Link to="/forgot-password" className="link-primary font-medium">
+          Forgot password?
+        </Link>
+      </div>
     </Container>
   );
 }
