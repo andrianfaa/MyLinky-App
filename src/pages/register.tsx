@@ -1,24 +1,24 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import type { ReactElement } from "react";
-import { useEffect, useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { useState } from "react";
 import axios from "redaxios";
+import { Link, useNavigate } from "react-router-dom";
 
-import { useAppDispatch } from "../app";
 import { Container } from "../components";
 import {
   Button, Input, InputCheckbox, InputGroup, InputWithIcon, LoadingIcon, notyf,
 } from "../components/atom";
 import config from "../config";
-import { emailPattern, passwordPattern } from "../constants";
-import { setToken } from "../features/auth";
+import { emailPattern, passwordPattern, usernamePattern } from "../constants";
 
-import { EmailIcon, LockIcon } from "../assets/icons";
+import { EmailIcon, LockIcon, UserIcon } from "../assets/icons";
 import { LogoWithText } from "../assets/images";
 
-export interface LoginStateProps {
+export interface RegisterStateProps {
+  username: string;
   email: string;
   password: string;
+  confirmPassword: string;
 }
 
 export interface FormInput {
@@ -36,26 +36,26 @@ export interface FormInput {
   pattern?: string;
 }
 
-export default function Login(): JSX.Element {
+export default function Register(): JSX.Element {
   const [isLoading, setLoading] = useState<boolean>(false);
-  const [formState, setFormState] = useState<LoginStateProps>({
+  const [formState, setFormState] = useState<RegisterStateProps>({
+    username: "",
     email: "",
     password: "",
+    confirmPassword: "",
   });
 
-  const dispatch = useAppDispatch();
-  const location = useLocation() as LocationState<{
-    email: string;
-    password: string;
-  }>;
+  const navigate = useNavigate();
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
     const { name, value } = event.target;
 
     const testEmail = name === "email" && new RegExp(emailPattern).test(value);
     const testPassword = name === "password" && new RegExp(passwordPattern).test(value);
+    const testUsername = name === "username" && new RegExp(usernamePattern).test(value);
+    const testConfirmPassword = name === "confirmPassword" && value === formState.password;
 
-    if (testEmail || testPassword) {
+    if (testEmail || testPassword || testUsername || testConfirmPassword) {
       event.target.classList.remove("input-error");
     } else {
       event.target.classList.add("input-error");
@@ -71,12 +71,14 @@ export default function Login(): JSX.Element {
     event.preventDefault();
     setLoading(true);
 
+    const testUsername = new RegExp(usernamePattern).test(formState.username);
     const testEmail = new RegExp(emailPattern).test(formState.email);
     const testPassword = new RegExp(passwordPattern).test(formState.password);
+    const testConfirmPassword = formState.password === formState.confirmPassword;
 
-    if (!testEmail && !testPassword) {
+    if (!testUsername) {
       setLoading(false);
-      notyf.error("Please enter a valid email and password");
+      notyf.error("Please enter a valid username");
       return;
     }
 
@@ -92,45 +94,65 @@ export default function Login(): JSX.Element {
       return;
     }
 
-    try {
-      const response = await axios<HttpResponse<{ token: string }>>({
-        url: `${config.api.url}/user/login`,
-        method: "POST",
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-          "x-api-key": config.api.key,
-        },
-        data: formState as LoginStateProps,
-      });
-
-      if (response.status === 200 && response.data.status === "success" && response.data.statusCode === 200) {
-        const { token } = response.data?.data as { token: string };
-        setLoading(false);
-        dispatch(setToken(token));
-        window.location.reload();
-        return;
-      }
-
+    if (!testConfirmPassword) {
       setLoading(false);
-      notyf.error(response?.data?.message ?? "Login failed");
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (error: any) {
-      setLoading(false);
-      notyf.error(error?.message ?? error?.data?.message ?? "Login failed");
+      notyf.error("Passwords do not match");
+      return;
     }
+
+    const register = async (): Promise<void> => {
+      try {
+        const response = await axios.post(`${config.api.url}/user/register`, formState as RegisterStateProps, {
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+            "x-api-key": config.api.key,
+          },
+        });
+
+        if (response.status === 200 && response.data.status === "success" && response.data.statusCode === 200) {
+          setLoading(false);
+          notyf.success("Registration successful. Please login to continue");
+          setFormState({
+            username: "",
+            email: "",
+            password: "",
+            confirmPassword: "",
+          });
+          navigate("/", {
+            state: {
+              email: formState.email,
+              password: formState.password,
+            },
+          });
+          return;
+        }
+
+        setLoading(false);
+        notyf.error("Registration failed");
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } catch (error: any) {
+        setLoading(false);
+        notyf.error(error?.message ?? error?.data?.message ?? "Registration failed");
+      }
+    };
+
+    register();
   };
 
-  useEffect(() => {
-    if (location?.state?.email || location?.state?.password) {
-      setFormState((prevState) => ({
-        ...prevState,
-        email: location?.state?.email ?? "",
-        password: location?.state?.password ?? "",
-      }));
-    }
-  }, [location?.state]);
-
   const formInput: FormInput[] = [
+    {
+      name: "username",
+      label: "Username",
+      id: "username",
+      icon: <UserIcon />,
+      type: "text",
+      placeholder: "mylinky_username",
+      onChange: handleChange,
+      required: true,
+      disabled: isLoading,
+      value: formState.username,
+      title: "Enter your username",
+    },
     {
       name: "email",
       label: "Email",
@@ -157,6 +179,19 @@ export default function Login(): JSX.Element {
       disabled: isLoading,
       title: "Enter your password",
     },
+    {
+      name: "confirmPassword",
+      label: "Confirm password",
+      id: "configpassword",
+      icon: <LockIcon />,
+      type: "password",
+      placeholder: "Confirm your password",
+      onChange: handleChange,
+      required: true,
+      value: formState.confirmPassword,
+      disabled: isLoading,
+      title: "Confirm your password",
+    },
   ];
 
   return (
@@ -165,9 +200,9 @@ export default function Login(): JSX.Element {
         <LogoWithText className="scale-150 mx-auto mb-9" />
 
         <div className="flex items-center justify-between mb-6">
-          <h1 className="text-xl font-semibold text-dark-1">Login</h1>
-          <Link to="/register" className="link-primary font-medium" title="Register">
-            Register
+          <h1 className="text-xl font-semibold text-dark-1">Register</h1>
+          <Link to="/" className="link-primary font-medium" title="Login">
+            Login
           </Link>
         </div>
 
@@ -185,25 +220,23 @@ export default function Login(): JSX.Element {
           ))}
 
           <InputCheckbox
-            label="Remember me"
-            targetId="remember-me"
+            label="I agree to the terms and conditions"
+            targetId="terms"
             className="flex items-center gap-2 mb-4"
+            isRequired
             disabled={isLoading}
           />
 
           <Button
             className="button-base button-primary mb-4 w-full flex justify-center items-center"
-            title={isLoading ? "Loading..." : "Login"}
+            title={isLoading ? "Loading..." : "Register"}
             type="submit"
             disabled={isLoading}
           >
-            {isLoading ? <LoadingIcon /> : "Login"}
+            {isLoading ? <LoadingIcon /> : "Register"}
           </Button>
         </form>
 
-        <Link to="/forgot-password" className="link-primary font-medium">
-          Forgot password?
-        </Link>
       </div>
     </Container>
   );

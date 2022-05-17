@@ -19,15 +19,15 @@ store.subscribe(() => {
   const { auth } = store.getState();
 
   if (auth.token) {
-    SessionStorage.set("uid", auth.token);
+    SessionStorage.set("token", auth.token);
   } else {
-    SessionStorage.set("uid", null);
+    SessionStorage.remove("token");
   }
 
   if (auth.user) {
     SessionStorage.set("user", auth.user);
   } else {
-    SessionStorage.set("user", null);
+    SessionStorage.remove("user");
   }
 });
 

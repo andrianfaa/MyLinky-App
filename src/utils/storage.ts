@@ -7,7 +7,7 @@ const SessionStorage = {
     const value = sessionStorage.getItem(key);
 
     if (value) {
-      return JSON.parse(value);
+      return JSON.parse(value) as T || null;
     }
 
     return null;
@@ -31,7 +31,7 @@ const LocalStorage = {
     const value = localStorage.getItem(key);
 
     if (value) {
-      return JSON.parse(value);
+      return JSON.parse(value) as T || null;
     }
 
     return null;

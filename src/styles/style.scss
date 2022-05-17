@@ -46,6 +46,13 @@
         }
       }
 
+      &:hover,
+      &:focus {
+        & + .input-checkbox__box {
+          @apply border-primary;
+        }
+      }
+
       &:checked {
         & + .input-checkbox__box {
           @apply bg-primary border-primary pl-[1px];
