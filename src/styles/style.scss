@@ -64,7 +64,7 @@
       &__box {
         @include border-default;
         @apply transition-all duration-200 ease-linear;
-        @apply relative block w-[20px] h-[20px] border-[1.5px] rounded-md select-none bg-transparent;
+        @apply relative block w-[20px] h-[20px] border-[1.5px] rounded-md select-none bg-transparent cursor-pointer;
         @apply hover:border-primary focus:border-primary;
       }
     }

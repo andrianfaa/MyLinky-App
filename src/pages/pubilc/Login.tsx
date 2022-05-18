@@ -4,17 +4,18 @@ import { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import axios from "redaxios";
 
-import { useAppDispatch } from "../app";
-import { Container } from "../components";
+import { Notyf } from "../../helpers";
+import { useAppDispatch } from "../../app";
+import { Container } from "../../components";
 import {
-  Button, Input, InputCheckbox, InputGroup, InputWithIcon, LoadingIcon, notyf,
-} from "../components/atom";
-import config from "../config";
-import { emailPattern, passwordPattern } from "../constants";
-import { setToken } from "../features/auth";
+  Button, Input, Spinner, InputGroup,
+} from "../../components/ui";
+import config from "../../config";
+import { emailPattern, passwordPattern } from "../../constants";
+import { setToken } from "../../features/auth";
 
-import { EmailIcon, LockIcon } from "../assets/icons";
-import { LogoWithText } from "../assets/images";
+import { EmailIcon, LockIcon } from "../../assets/icons";
+import { LogoWithText } from "../../assets/images";
 
 export interface LoginStateProps {
   email: string;
@@ -76,19 +77,19 @@ export default function Login(): JSX.Element {
 
     if (!testEmail && !testPassword) {
       setLoading(false);
-      notyf.error("Please enter a valid email and password");
+      Notyf.error("Please enter a valid email and password");
       return;
     }
 
     if (!testEmail) {
       setLoading(false);
-      notyf.error("Email is not valid");
+      Notyf.error("Email is not valid");
       return;
     }
 
     if (!testPassword) {
       setLoading(false);
-      notyf.error("Password is not valid");
+      Notyf.error("Password is not valid");
       return;
     }
 
@@ -112,11 +113,11 @@ export default function Login(): JSX.Element {
       }
 
       setLoading(false);
-      notyf.error(response?.data?.message ?? "Login failed");
+      Notyf.error(response?.data?.message ?? "Login failed");
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       setLoading(false);
-      notyf.error(error?.message ?? error?.data?.message ?? "Login failed");
+      Notyf.error(error?.message ?? error?.data?.message ?? "Login failed");
     }
   };
 
@@ -173,32 +174,48 @@ export default function Login(): JSX.Element {
 
         <form onSubmit={handleOnSubmit} className="text-left">
           {formInput.flatMap((input: FormInput) => (
-            <InputGroup key={input.name} label={input.label} targetId={input.id} isRequired={input.required}>
-              <InputWithIcon
-                className="mb-4 w-full"
-                icon={input.icon}
-                renderInput={
-                  <Input className="pl-12" title={input.title} pattern={input.pattern as string} {...input} />
-                }
+            <InputGroup.withLabel
+              key={input.id}
+              label={input.label}
+              targetId={input.id}
+              required={input.required}
+            >
+              <Input.withIcon
+                name={input.name}
+                id={input.id}
+                disabled={input.disabled}
+                className="input-base pl-12"
+                placeholder={input.placeholder}
+                onChange={input.onChange}
+                value={input.value}
+                type={input.type || "text"}
+                title={input.title}
+                showIcon
+                leftIcon={input.icon}
               />
-            </InputGroup>
+            </InputGroup.withLabel>
           ))}
 
-          <InputCheckbox
+          <InputGroup.checkbox
             label="Remember me"
             targetId="remember-me"
             className="flex items-center gap-2 mb-4"
-            disabled={isLoading}
-          />
-
-          <Button
-            className="button-base button-primary mb-4 w-full flex justify-center items-center"
-            title={isLoading ? "Loading..." : "Login"}
-            type="submit"
-            disabled={isLoading}
           >
-            {isLoading ? <LoadingIcon /> : "Login"}
-          </Button>
+            <Input.checkbox
+              name="remember-me"
+              id="remember-me"
+              className="mr-2"
+              disabled={isLoading}
+            />
+          </InputGroup.checkbox>
+
+          <Button.submit
+            className="button-base button-primary mb-4 w-full flex justify-center items-center"
+            disabled={isLoading}
+            title={isLoading ? "Loading..." : "Login"}
+          >
+            {isLoading ? <Spinner /> : "Login"}
+          </Button.submit>
         </form>
 
         <Link to="/forgot-password" className="link-primary font-medium">

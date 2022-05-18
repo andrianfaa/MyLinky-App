@@ -4,15 +4,16 @@ import { useState } from "react";
 import axios from "redaxios";
 import { Link, useNavigate } from "react-router-dom";
 
-import { Container } from "../components";
+import { Notyf } from "../../helpers";
+import { Container } from "../../components";
 import {
-  Button, Input, InputCheckbox, InputGroup, InputWithIcon, LoadingIcon, notyf,
-} from "../components/atom";
-import config from "../config";
-import { emailPattern, passwordPattern, usernamePattern } from "../constants";
+  Button, Input, Spinner, InputGroup,
+} from "../../components/ui";
+import config from "../../config";
+import { emailPattern, passwordPattern, usernamePattern } from "../../constants";
 
-import { EmailIcon, LockIcon, UserIcon } from "../assets/icons";
-import { LogoWithText } from "../assets/images";
+import { EmailIcon, LockIcon, UserIcon } from "../../assets/icons";
+import { LogoWithText } from "../../assets/images";
 
 export interface RegisterStateProps {
   username: string;
@@ -78,25 +79,25 @@ export default function Register(): JSX.Element {
 
     if (!testUsername) {
       setLoading(false);
-      notyf.error("Please enter a valid username");
+      Notyf.error("Username is not valid, it must be between 3 and 20 characters and can only contain letters, numbers and underscores");
       return;
     }
 
     if (!testEmail) {
       setLoading(false);
-      notyf.error("Email is not valid");
+      Notyf.error("Email is not valid");
       return;
     }
 
     if (!testPassword) {
       setLoading(false);
-      notyf.error("Password is not valid");
+      Notyf.error("Password is not valid, it must be at least 8 characters long and contain at least one number and one uppercase letter");
       return;
     }
 
     if (!testConfirmPassword) {
       setLoading(false);
-      notyf.error("Passwords do not match");
+      Notyf.error("Passwords do not match");
       return;
     }
 
@@ -111,7 +112,7 @@ export default function Register(): JSX.Element {
 
         if (response.status === 200 && response.data.status === "success" && response.data.statusCode === 200) {
           setLoading(false);
-          notyf.success("Registration successful. Please login to continue");
+          Notyf.success("Registration successful. Please login to continue");
           setFormState({
             username: "",
             email: "",
@@ -128,11 +129,11 @@ export default function Register(): JSX.Element {
         }
 
         setLoading(false);
-        notyf.error("Registration failed");
+        Notyf.error("Registration failed");
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } catch (error: any) {
         setLoading(false);
-        notyf.error(error?.message ?? error?.data?.message ?? "Registration failed");
+        Notyf.error(error?.message ?? error?.data?.message ?? "Registration failed");
       }
     };
 
@@ -208,33 +209,50 @@ export default function Register(): JSX.Element {
 
         <form onSubmit={handleOnSubmit} className="text-left">
           {formInput.flatMap((input: FormInput) => (
-            <InputGroup key={input.name} label={input.label} targetId={input.id} isRequired={input.required}>
-              <InputWithIcon
-                className="mb-4 w-full"
-                icon={input.icon}
-                renderInput={
-                  <Input className="pl-12" title={input.title} pattern={input.pattern as string} {...input} />
-                }
+            <InputGroup.withLabel
+              key={input.id}
+              label={input.label}
+              targetId={input.id}
+              required={input.required}
+            >
+              <Input.withIcon
+                name={input.name}
+                id={input.id}
+                disabled={input.disabled}
+                className="input-base pl-12"
+                placeholder={input.placeholder}
+                onChange={input.onChange}
+                value={input.value}
+                type={input.type || "text"}
+                title={input.title}
+                showIcon
+                leftIcon={input.icon}
               />
-            </InputGroup>
+            </InputGroup.withLabel>
           ))}
 
-          <InputCheckbox
+          <InputGroup.checkbox
             label="I agree to the terms and conditions"
             targetId="terms"
             className="flex items-center gap-2 mb-4"
-            isRequired
-            disabled={isLoading}
-          />
-
-          <Button
-            className="button-base button-primary mb-4 w-full flex justify-center items-center"
-            title={isLoading ? "Loading..." : "Register"}
-            type="submit"
-            disabled={isLoading}
+            required
           >
-            {isLoading ? <LoadingIcon /> : "Register"}
-          </Button>
+            <Input.checkbox
+              name="terms"
+              id="terms"
+              className="mr-2"
+              disabled={isLoading}
+              required
+            />
+          </InputGroup.checkbox>
+
+          <Button.submit
+            className="button-base button-primary mb-4 w-full flex justify-center items-center"
+            disabled={isLoading}
+            title={isLoading ? "Loading..." : "Register"}
+          >
+            {isLoading ? <Spinner className="w-8 h-8" /> : "Register"}
+          </Button.submit>
         </form>
 
       </div>

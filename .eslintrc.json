@@ -4,11 +4,7 @@
     "es2021": true,
     "node": true
   },
-  "extends": [
-    "plugin:react/recommended",
-    "airbnb",
-    "plugin:@typescript-eslint/recommended"
-  ],
+  "extends": ["plugin:react/recommended", "airbnb", "plugin:@typescript-eslint/recommended"],
   "parser": "@typescript-eslint/parser",
   "parserOptions": {
     "ecmaFeatures": {
@@ -42,6 +38,7 @@
     "no-param-reassign": ["error", { "props": false }],
     "react/jsx-indent": ["error", 2],
     "react/jsx-indent-props": ["error", 2],
+    "react/jsx-pascal-case": 0,
     "react/jsx-filename-extension": [
       "error",
       {

@@ -1,4 +1,4 @@
-import { ReactElement } from "react";
+import { FunctionComponent, ReactElement, ReactNode } from "react";
 
 declare global {
   interface HttpResponse<T> {
@@ -11,6 +11,8 @@ declare global {
   interface RouteConfig {
     path: string;
     element: JSX.Element | ReactElement | function;
+    icon?: FunctionComponent<SVGProps<SVGSVGElement>> | null;
+    name?: string;
   }
 
   interface LocationState<T> {

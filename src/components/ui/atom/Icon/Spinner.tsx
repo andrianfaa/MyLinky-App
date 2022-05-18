@@ -1,13 +1,9 @@
-/* eslint-disable react/require-default-props */
-export interface LoadingIconProps {
-  size?: "small" | "normal" | "large";
-  className?: string;
-}
+import type { SpinnerIconProps } from "./types";
 
-export function LoadingIcon({
+export function Spinner({
   size = "normal",
   className = "border-white",
-}: LoadingIconProps): JSX.Element {
+}: SpinnerIconProps): JSX.Element {
   if (size === "small") {
     return (
       <div className={`border-y-4 border-y-transparent border-x-4 ${className} w-4 h-4 rounded-full animate-spin-fast`} />
