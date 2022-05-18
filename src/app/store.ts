@@ -1,9 +1,13 @@
 import { configureStore, combineReducers } from "@reduxjs/toolkit";
 import { authSlice } from "../features/auth";
 import { SessionStorage } from "../utils";
+import {
+  settingServices,
+} from "../services";
 
 const rootReducer = combineReducers({
   auth: authSlice.reducer,
+  [settingServices.reducerPath]: settingServices.reducer,
 });
 
 const store = configureStore({
@@ -12,6 +16,7 @@ const store = configureStore({
   middleware: (getDefaultMiddleware) => [
     ...getDefaultMiddleware(),
     // ...otherMiddleware,
+    settingServices.middleware,
   ],
 });
 

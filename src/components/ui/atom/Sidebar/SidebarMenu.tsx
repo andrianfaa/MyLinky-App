@@ -6,6 +6,7 @@ export function SidebarMenuItem({
   icon,
   label,
   path,
+  onClick,
 }: MenuItem) {
   const Icon = icon;
   const resolvedPath = useResolvedPath({
@@ -16,8 +17,8 @@ export function SidebarMenuItem({
   });
 
   return (
-    <Link to={path} className={`${match ? "bg-primary text-white" : "hover:bg-dark-1 hover:bg-opacity-10"} transition-[background] duration-200 ease-linear p-4 rounded-lg flex items-center flex-1`}>
-      {Icon && <Icon className="w-6 h-6 mr-4" />}
+    <Link onClick={onClick} to={path} className={`${match ? "bg-primary text-white" : "hover:bg-dark-4 hover:bg-opacity-10"} transition-[background] duration-200 ease-in-out p-4 rounded-lg flex items-center flex-1`}>
+      {Icon && <Icon className="w-6 h-6 mr-3" />}
       {" "}
       {label ?? ""}
     </Link>

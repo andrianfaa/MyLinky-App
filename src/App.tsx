@@ -4,7 +4,7 @@ import axios from "redaxios";
 
 import { useAppDispatch, useAppSelector } from "./app";
 import { PublicRoutes, PrivateRoutes } from "./app/routes";
-import { Sidebar, Spinner } from "./components/ui";
+import { Sidebar, Spinner, Navbar } from "./components/ui";
 import config from "./config";
 import { logout, setAuth } from "./features/auth";
 import { User } from "./features/auth/types";
@@ -17,13 +17,13 @@ export interface GetProfileSucessResponse {
 
 export default function App() {
   const [isLoading, setIsLoading] = useState(true);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   const { isAuth, token } = useAppSelector(({ auth }) => auth);
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const routes = [...PrivateRoutes];
 
-  const sidebarMenu = routes.map((route: RouteConfig) => ({
+  const sidebarMenu = PrivateRoutes.map((route: RouteConfig) => ({
     icon: route.icon ?? null,
     label: route.name ?? null,
     path: route.path,
@@ -79,9 +79,10 @@ export default function App() {
   if (isAuth) {
     return (
       <div className="flex flex-row relative">
-        <Sidebar items={sidebarMenu} />
+        <Sidebar items={sidebarMenu} open={isSidebarOpen} setIsSidebarOpen={setIsSidebarOpen} />
 
         <div className="flex-1 h-screen overflow-y-auto">
+          <Navbar setIsSidebarOpen={setIsSidebarOpen} isSidebarOpen={isSidebarOpen} />
           <Routes>
             {PrivateRoutes.map((route: RouteConfig) => (
               <Route key={route.path} path={route.path} element={<route.element />} />

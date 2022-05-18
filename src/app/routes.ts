@@ -2,8 +2,9 @@ import Login from "../pages/pubilc/Login";
 import Register from "../pages/pubilc/Register";
 // Private Pages
 import Dashboard from "../pages/private/Dashboard";
+import Setting from "../pages/private/Setting";
 
-import { FlashIcon } from "../assets/icons";
+import { FlashIcon, SettingIcon } from "../assets/icons";
 
 const PublicRoutes: RouteConfig[] = [
   {
@@ -24,9 +25,10 @@ const PrivateRoutes: RouteConfig[] = [
     icon: FlashIcon,
   },
   {
-    path: "/register",
-    element: Register,
-    name: "Register",
+    path: "/setting",
+    element: Setting,
+    name: "Setting",
+    icon: SettingIcon,
   },
 ];
 
