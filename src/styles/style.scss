@@ -82,6 +82,12 @@
       @apply hover:bg-primary-dark hover:border-primary-dark hover:text-white;
       @apply focus:bg-primary-dark focus:border-primary-dark focus:text-white;
     }
+
+    &-secondary {
+      @apply bg-white text-dark-4;
+      @apply hover:bg-light-3 hover:border-light-3 hover:text-dark-4;
+      @apply focus:bg-light-3 focus:border-light-3 focus:text-dark-4;
+    }
   }
 }
 

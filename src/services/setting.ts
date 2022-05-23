@@ -23,7 +23,8 @@ export interface SettingResponse {
       openLinksInNewTab: boolean;
       showIcon: boolean;
     }
-  }
+  };
+  uid: string;
 }
 
 export const settingServices = createApi({
@@ -38,9 +39,24 @@ export const settingServices = createApi({
         method: "GET",
       }),
     }),
+    updateSetting: builder.mutation<HttpResponse<null>, { uid: string, settings: SettingResponse }>({
+      query: (data) => ({
+        url: "/setting",
+        method: "PUT",
+        body: data,
+      }),
+    }),
+    resetSetting: builder.mutation<HttpResponse<null>, void>({
+      query: () => ({
+        url: "/setting/reset",
+        method: "PUT",
+      }),
+    }),
   }),
 });
 
 export const {
   useGetSettingQuery,
+  useUpdateSettingMutation,
+  useResetSettingMutation,
 } = settingServices;

@@ -6,3 +6,6 @@ export { ReactComponent as FlashIcon } from "./ic-flash.svg";
 export { ReactComponent as LogoutIcon } from "./ic-logout.svg";
 export { ReactComponent as SettingIcon } from "./ic-setting.svg";
 export { ReactComponent as MenuIcon } from "./ic-menu.svg";
+export { ReactComponent as BookIcon } from "./ic-book.svg";
+export { ReactComponent as PlayIcon } from "./ic-play-circle.svg";
+export { ReactComponent as PencilIcon } from "./ic-pencil.svg";

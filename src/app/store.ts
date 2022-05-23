@@ -3,11 +3,13 @@ import { authSlice } from "../features/auth";
 import { SessionStorage } from "../utils";
 import {
   settingServices,
+  imageServices,
 } from "../services";
 
 const rootReducer = combineReducers({
   auth: authSlice.reducer,
   [settingServices.reducerPath]: settingServices.reducer,
+  [imageServices.reducerPath]: imageServices.reducer,
 });
 
 const store = configureStore({
@@ -17,6 +19,7 @@ const store = configureStore({
     ...getDefaultMiddleware(),
     // ...otherMiddleware,
     settingServices.middleware,
+    imageServices.middleware,
   ],
 });
 

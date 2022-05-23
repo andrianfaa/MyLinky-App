@@ -15,7 +15,7 @@ const baseQuery = fetchBaseQuery({
     const { token } = (getState() as RootState).auth;
 
     if (token) {
-      headers.set("authorization", `Bearer ${token}`);
+      headers.set("Authorization", `Bearer ${token}`);
     }
 
     return headers;
@@ -31,17 +31,16 @@ const baseQueryWithLogout: BaseQueryFn<
 
   if (result.error && result.error.status === 401) {
     api.dispatch(logout());
-    return result;
   }
 
   if (result.error && result.error?.status === "FETCH_ERROR") {
     Notyf.error("Fetch error: Please check your internet connection");
   }
 
-  if (result.error) {
-    api.dispatch(logout());
-    Notyf.error("Your session has expired. Please login again.");
-  }
+  // if (result.error) {
+  //   api.dispatch(logout());
+  //   Notyf.error("Your session has expired. Please login again.");
+  // }
 
   return result;
 };

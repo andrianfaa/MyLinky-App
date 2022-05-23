@@ -14,7 +14,7 @@ export const InputGroup = {
     targetId,
   }: InputGroupProps): JSX.Element => (
     <div className={`${className}`}>
-      <label htmlFor={targetId} className="block font-medium mb-2">
+      <label htmlFor={targetId} className="block mb-2">
         {label}
         {" "}
         {required && <span className="text-error">*</span>}
