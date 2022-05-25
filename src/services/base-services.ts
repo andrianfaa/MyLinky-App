@@ -1,5 +1,5 @@
 import {
-  fetchBaseQuery, BaseQueryFn, FetchArgs, FetchBaseQueryError,
+  BaseQueryFn, FetchArgs, fetchBaseQuery, FetchBaseQueryError,
 } from "@reduxjs/toolkit/query/react";
 import type { RootState } from "../app/store";
 import config from "../config";
@@ -37,10 +37,10 @@ const baseQueryWithLogout: BaseQueryFn<
     Notyf.error("Fetch error: Please check your internet connection");
   }
 
-  // if (result.error) {
-  //   api.dispatch(logout());
-  //   Notyf.error("Your session has expired. Please login again.");
-  // }
+  if (result.error) {
+    const { message } = result.error?.data as { message: string };
+    Notyf.error(message);
+  }
 
   return result;
 };

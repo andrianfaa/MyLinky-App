@@ -15,7 +15,8 @@
   }
 
   button,
-  input {
+  input,
+  textarea {
     @apply bg-white text-base font-sans;
     @apply disabled:cursor-not-allowed disabled:opacity-50;
   }
@@ -29,6 +30,22 @@
       @apply border-[1.5px] py-3 px-5 rounded-xl w-full;
       @apply focus:outline-none focus:border-primary;
       @apply hover:border-primary;
+    }
+
+    &-select {
+      @include border-default;
+      @apply transition-[border] duration-200 ease-linear;
+      @apply border-[1.5px] p-3 rounded-xl w-auto bg-transparent appearance-none;
+      @apply focus:outline-none focus:border-primary;
+      @apply hover:border-primary;
+
+      &::-ms-expand {
+        display: none;
+      }
+
+      * {
+        @apply text-base font-bold;
+      }
     }
 
     &-error {
@@ -96,6 +113,16 @@
     &-primary {
       @apply text-primary hover:text-primary-dark;
     }
+  }
+}
+
+#profile-avatar.drag-over {
+  @apply bg-primary bg-opacity-25 relative border border-primary rounded-lg;
+
+  &::after {
+    content: "Drop file here";
+    @apply bg-primary bg-opacity-50 border border-primary rounded-lg absolute w-full h-full flex items-center justify-center;
+    @apply text-xl font-bold text-white;
   }
 }
 

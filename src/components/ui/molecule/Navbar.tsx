@@ -1,10 +1,14 @@
 import { useEffect, useState } from "react";
-import Container from "../../../Container";
-import type { NavbarProps } from "./types";
+import Container from "../../Container";
 
-import { Logo, LogoWithText } from "../../../../assets/images";
-import { MenuIcon } from "../../../../assets/icons";
-import { Button } from "../../atom";
+import { MenuIcon } from "../../../assets/icons";
+import { Logo, LogoWithText } from "../../../assets/images";
+import { Button } from "../atom";
+
+export interface NavbarProps {
+  isSidebarOpen: boolean;
+  setIsSidebarOpen: (isOpen: boolean) => void;
+}
 
 export function Navbar({
   isSidebarOpen,

@@ -1,11 +1,6 @@
-export * from "./Button/Button";
-export * from "./Button/Button.types";
-
-export * from "./Input/Input";
-export * from "./Input/Input.types";
-
-export * from "./Sidebar/SidebarMenu";
-export * from "./Sidebar/SidebarMenuProfile";
-export * from "./Sidebar/types";
-
+export * from "./Button";
+export * from "./Input";
+export * from "./Sidebar";
 export * from "./Icon";
+export * from "./Select";
+export * from "./Switch";

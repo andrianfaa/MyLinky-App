@@ -6,7 +6,6 @@ import Container from "../../Container";
 export interface HeaderProps {
   title: string;
   description?: string;
-
 }
 
 export function Header({

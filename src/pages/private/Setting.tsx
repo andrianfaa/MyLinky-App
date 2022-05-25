@@ -1,18 +1,26 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
 /* eslint-disable jsx-a11y/no-noninteractive-tabindex */
 /* eslint-disable jsx-a11y/no-static-element-interactions */
-import { useEffect, useState } from "react";
+import {
+  Ref, useEffect, useRef, useState,
+} from "react";
+import type { LoadingBarRef } from "react-top-loading-bar";
+import LoadingBar from "react-top-loading-bar";
+import { useAppDispatch, useAppSelector } from "../../app";
 import { PencilIcon, UserIcon } from "../../assets/icons";
 import { Container } from "../../components";
 import {
-  Button, Input, InputGroup, Spinner,
+  Button, Input, InputGroup, Spinner, Switch,
 } from "../../components/ui";
 import { Header } from "../../components/ui/organism";
+import { setAuth } from "../../features/auth";
 import { Notyf } from "../../helpers";
 import type { SettingResponse } from "../../services";
 import { useGetSettingQuery, useUpdateSettingMutation, useUploadProfilePhotoMutation } from "../../services";
 
 export default function Setting(): JSX.Element {
+  const [isLoading, setLoading] = useState<boolean>(false);
+  const [isChanged, setIsChanged] = useState<boolean>(false);
   const [formState, setFormState] = useState<SettingResponse>({
     generalSettings: {
       profile: {
@@ -38,11 +46,14 @@ export default function Setting(): JSX.Element {
     },
     uid: "",
   });
-  const [isLoading, setLoading] = useState<boolean>(false);
 
   const { data: settingData, isLoading: isLoadingSettingData, refetch } = useGetSettingQuery();
   const [updateSetting, { isLoading: isLoadingUpdateSetting }] = useUpdateSettingMutation();
   const [uploadProfilePhoto, { isLoading: isLoadingUploadPhoto }] = useUploadProfilePhotoMutation();
+
+  const loadingBarRef: Ref<LoadingBarRef> = useRef(null);
+  const { user } = useAppSelector(({ auth }) => auth);
+  const dispatch = useAppDispatch();
 
   const handleOnChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>): void => {
     const { name, value } = event.target;
@@ -67,34 +78,54 @@ export default function Setting(): JSX.Element {
 
   const handleUpdate = (e: React.FormEvent<HTMLFormElement>): void => {
     e.preventDefault();
-    setLoading(true);
 
     updateSetting({
       uid: formState.uid,
-      settings: {
-        ...formState,
-        generalSettings: {
-          profile: {
-            name: formState.generalSettings.profile.name.trim(),
-            username: formState.generalSettings.profile.username.trim(),
-            email: formState.generalSettings.profile.email.trim(),
-            avatar: formState.generalSettings.profile.avatar.trim(),
-            bio: formState.generalSettings.profile.bio.trim(),
-          },
-        },
-      },
-    }).unwrap()
+      settings: formState,
+    })
+      .unwrap()
       .then((res) => {
         if (res.message === "Setting updated" || res.statusCode === 200) {
           Notyf.success("Setting updated");
           refetch();
-          setLoading(false);
         }
       })
       .catch((err) => {
-        setLoading(false);
         Notyf.error(err.message);
       });
+  };
+
+  const handleDropPhoto = (e: React.DragEvent<HTMLDivElement>): void => {
+    e.preventDefault();
+    const { files } = e.dataTransfer;
+
+    if (files.length > 0) {
+      e.currentTarget.classList.remove("drag-over");
+
+      const file = files[0];
+      const formData = new FormData();
+
+      formData.append("photo", file);
+
+      uploadProfilePhoto(formData)
+        .unwrap()
+        .then((res) => {
+          setTimeout(() => {
+            setFormState((prevState) => ({
+              ...prevState,
+              generalSettings: {
+                profile: {
+                  ...prevState.generalSettings.profile,
+                  avatar: res?.data?.url ?? prevState.generalSettings.profile.avatar,
+                },
+              },
+            }));
+          }, 500);
+        })
+        .catch((err) => {
+          Notyf.error(err.message);
+        });
+    }
   };
 
   const handleChangeProfilePhoto = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -119,7 +150,7 @@ export default function Setting(): JSX.Element {
                 },
               },
             }));
-          }, 1000);
+          }, 500);
         })
         .catch((err) => {
           Notyf.error(err.message);
@@ -170,6 +201,13 @@ export default function Setting(): JSX.Element {
         ...prevState,
         ...settingData.data,
       }));
+
+      if (user) {
+        dispatch(setAuth({
+          ...user,
+          avatar: formState.generalSettings.profile.avatar,
+        }));
+      }
     }
   }, [settingData?.data, isLoadingSettingData]);
 
@@ -178,11 +216,28 @@ export default function Setting(): JSX.Element {
     const currentState = JSON.stringify(formState);
 
     if (defaultState !== currentState) {
-      setLoading(false);
+      setIsChanged(false);
     } else {
-      setLoading(true);
+      setIsChanged(true);
+    }
+
+    if (user) {
+      dispatch(setAuth({
+        ...user,
+        avatar: formState.generalSettings.profile.avatar,
+      }));
     }
   }, [formState]);
+
+  useEffect(() => {
+    const loadingBar = loadingBarRef.current;
+
+    if (isLoadingSettingData || isLoadingUpdateSetting || isLoadingUploadPhoto) {
+      loadingBar?.continuousStart(1, 100);
+    } else {
+      loadingBar?.complete();
+    }
+  }, [isLoadingSettingData, isLoadingUpdateSetting, isLoadingUploadPhoto]);
 
   const formInputProfile = [
     {
@@ -275,6 +330,7 @@ export default function Setting(): JSX.Element {
 
   return (
     <>
+      <LoadingBar color="#25ced1" loaderSpeed={15} height={4} ref={loadingBarRef} />
       <Header
         title="Setting"
         description="This is the setting page"
@@ -293,14 +349,45 @@ export default function Setting(): JSX.Element {
               </h3>
 
               <div className="flex-1 flex-col">
-                <div className="flex items-center justify-center w-full p-6">
-                  <div className="relative">
+                <div
+                  className="flex items-center justify-center w-full p-6"
+                  id="profile-avatar"
+                  onDragOver={(e) => {
+                    e.preventDefault();
+                    e.currentTarget.classList.add("drag-over");
+                  }}
+                  onDragLeave={(e) => {
+                    e.preventDefault();
+                    e.currentTarget.classList.remove("drag-over");
+                  }}
+                  onDragEnd={(e) => {
+                    e.preventDefault();
+                    e.currentTarget.classList.remove("drag-over");
+                  }}
+                  onDrop={handleDropPhoto}
+                >
+                  <div
+                    className="relative"
+                  >
                     {formState.generalSettings.profile.avatar ? (
-                      <div className="w-32 h-32 lg:w-44 lg:h-44 rounded-full object-cover bg-light-2">
-                        <img src={formState.generalSettings.profile.avatar} alt={formState.generalSettings.profile.name} className="w-32 h-32 lg:w-44 lg:h-44 rounded-full object-cover" />
+                      <div
+                        className="w-36 h-36 lg:w-44 lg:h-44 rounded-full object-cover bg-light-2"
+                      >
+                        <img src={formState.generalSettings.profile.avatar} alt={formState.generalSettings.profile.name} className="w-36 h-36 lg:w-44 lg:h-44 rounded-full object-cover" />
                       </div>
                     ) : (
-                      <div className="w-32 h-32 lg:w-44 lg:h-44 rounded-full bg-light-1 border-4 border-light-2 flex items-center justify-center">
+                      <div
+                        className="w-36 h-36 lg:w-44 lg:h-44 rounded-full bg-light-1 border-4 border-light-2 flex items-center justify-center"
+                        onDragOver={(e) => {
+                          e.preventDefault();
+                          e.currentTarget.classList.add("border-primary");
+                        }}
+                        onDragLeave={(e) => {
+                          e.preventDefault();
+                          e.currentTarget.classList.remove("border-primary");
+                        }}
+                        onDrop={handleDropPhoto}
+                      >
                         <UserIcon className="w-20 h-20 text-dark-4" />
                       </div>
                     )}
@@ -374,32 +461,14 @@ export default function Setting(): JSX.Element {
                           {input.label}
                         </label>
 
-                        <div className="relative">
-                          <label className={
-                            `w-12 h-6 rounded-3xl transition-all duration-200 ease-in-out ${input.checked ? "bg-primary justify-end" : "bg-light-4 justify-start"} relative p-1 flex items-center cursor-pointer`
-                          }
-                          >
-                            <div
-                              className="block w-4 h-4 cursor-pointer rounded-full bg-white"
-                              tabIndex={0}
-                              onKeyDown={(e) => {
-                                if (e.code === "Enter") {
-                                  document.getElementById(input.id)?.click();
-                                }
-                              }}
-                            >
-                              <input
-                                type="checkbox"
-                                name={input.name}
-                                id={input.id}
-                                className="hidden"
-                                checked={input.checked}
-                                onChange={(e) => input.onchange(e, "profile")}
-                                disabled={isLoadingSettingData || isLoadingUpdateSetting || isLoadingUploadPhoto}
-                              />
-                            </div>
-                          </label>
-                        </div>
+                        <Switch
+                          id={input.id}
+                          title={input.label}
+                          name={input.name}
+                          checked={input.checked}
+                          onChange={(e) => handleToggle(e, "profile")}
+                          disabled={isLoadingSettingData || isLoadingUpdateSetting || isLoadingUploadPhoto}
+                        />
                       </div>
                     ))}
                   </div>
@@ -417,32 +486,14 @@ export default function Setting(): JSX.Element {
                           {input.label}
                         </label>
 
-                        <div className="relative">
-                          <label className={
-                            `w-12 h-6 rounded-3xl transition-all duration-200 ease-in-out ${input.checked ? "bg-primary justify-end" : "bg-light-4 justify-start"} relative p-1 flex items-center cursor-pointer`
-                          }
-                          >
-                            <div
-                              className="block w-4 h-4 cursor-pointer rounded-full bg-white"
-                              tabIndex={0}
-                              onKeyDown={(e) => {
-                                if (e.code === "Enter") {
-                                  document.getElementById(input.id)?.click();
-                                }
-                              }}
-                            >
-                              <input
-                                type="checkbox"
-                                name={input.name}
-                                id={input.id}
-                                className="hidden"
-                                checked={input.checked}
-                                onChange={(e) => input.onchange(e, "links")}
-                                disabled={isLoadingSettingData || isLoadingUpdateSetting || isLoadingUploadPhoto}
-                              />
-                            </div>
-                          </label>
-                        </div>
+                        <Switch
+                          id={input.id}
+                          title={input.label}
+                          name={input.name}
+                          checked={input.checked}
+                          onChange={(e) => handleToggle(e, "link")}
+                          disabled={isLoadingSettingData || isLoadingUpdateSetting || isLoadingUploadPhoto}
+                        />
                       </div>
                     ))}
                   </div>
@@ -453,7 +504,7 @@ export default function Setting(): JSX.Element {
                 <Button.submit
                   title="Save"
                   className="button-base button-primary w-full mb-2"
-                  disabled={isLoadingSettingData || isLoading || isLoadingUpdateSetting || isLoadingUploadPhoto}
+                  disabled={isLoadingSettingData || isChanged || isLoadingUpdateSetting || isLoadingUploadPhoto}
                 >
                   {isLoadingUploadPhoto && (
                     <div className="flex items-center justify-center gap-3">
@@ -477,7 +528,7 @@ export default function Setting(): JSX.Element {
                 <Button.button
                   title="Cancel"
                   className="button-base button-secondary w-full"
-                  disabled={isLoading}
+                  disabled={isChanged}
                   onClick={handleClickCancel}
                 >
                   Cancel

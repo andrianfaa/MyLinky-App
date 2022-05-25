@@ -1,3 +1,3 @@
-export * from "./Input/InputGroup";
-export * from "./Sidebar/Sidebar";
+export * from "./Input";
+export * from "./Sidebar";
 export * from "./Navbar";

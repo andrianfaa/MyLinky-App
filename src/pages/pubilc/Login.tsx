@@ -4,15 +4,15 @@ import { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import axios from "redaxios";
 
-import { Notyf } from "../../helpers";
 import { useAppDispatch } from "../../app";
 import { Container } from "../../components";
 import {
-  Button, Input, Spinner, InputGroup,
+  Button, Input, InputGroup, Spinner,
 } from "../../components/ui";
 import config from "../../config";
 import { emailPattern, passwordPattern } from "../../constants";
 import { setToken } from "../../features/auth";
+import { Notyf } from "../../helpers";
 
 import { EmailIcon, LockIcon } from "../../assets/icons";
 import { LogoWithText } from "../../assets/images";

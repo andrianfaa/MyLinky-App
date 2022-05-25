@@ -1,21 +1,19 @@
 import React from "react";
-import ReactDOM from "react-dom/client";
-import { BrowserRouter as Router } from "react-router-dom";
+import ReactDOM from "react-dom";
 import { Provider } from "react-redux";
+import { BrowserRouter as Router } from "react-router-dom";
 
 import App from "./App";
 import store from "./app/store";
-import * as serviceWorkerRegistration from "./serviceWorkerRegistration";
 import reportWebVitals from "./reportWebVitals";
+import * as serviceWorkerRegistration from "./serviceWorkerRegistration";
 
-import "./styles/style.scss";
 import "notyf/notyf.min.css";
+import "./styles/style.scss";
 
 const container = document.getElementById("root");
-// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-const root = ReactDOM.createRoot(container!);
 
-root.render(
+ReactDOM.render(
   <React.StrictMode>
     <Provider store={store}>
       <Router>
@@ -23,6 +21,7 @@ root.render(
       </Router>
     </Provider>
   </React.StrictMode>,
+  container,
 );
 
 // If you want your app to work offline and load faster, you can change
