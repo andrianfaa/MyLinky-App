@@ -1,0 +1,7 @@
+/node_modules
+/db
+/dist
+
+/src/config/.env.development
+/src/config/.env.production
+/serviceAccountKey.json
