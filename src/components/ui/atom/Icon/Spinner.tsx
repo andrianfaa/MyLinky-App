@@ -1,4 +1,8 @@
-import type { SpinnerIconProps } from "./types";
+/* eslint-disable react/require-default-props */
+export interface SpinnerIconProps {
+  size?: "small" | "normal" | "large";
+  className?: string;
+}
 
 export function Spinner({
   size = "normal",

@@ -23,6 +23,7 @@ import {
   TwitterIcon,
   WebsiteIcon,
 } from "../../assets/icons";
+import Illustration from "../../assets/images/illustrations/il-task.png";
 import { Container } from "../../components";
 import {
   Button,
@@ -87,7 +88,7 @@ export default function Links(): JSX.Element {
         title: "",
         type: "github",
         url: "",
-        isPublished: false,
+        isPublished: true,
         id,
       },
       ...prevLinks,
@@ -222,27 +223,15 @@ export default function Links(): JSX.Element {
                   disabled={!!(!isChanged || isUpdating)}
                   onClick={handleClickSave}
                 >
-                  {dataLinks?.data && (
-                    <>
-                      {dataLinks?.data?.links.length > 0 && isUpdating && (
-                        <div className="flex items-center justify-center gap-3">
-                          Updating
-                          {" "}
-                          <Spinner size="small" />
-                        </div>
-                      )}
-
-                      {dataLinks?.data?.links.length === 0 && !isUpdating && (
-                        <div className="flex items-center justify-center gap-3">
-                          Updating
-                          {" "}
-                          <Spinner size="small" />
-                        </div>
-                      )}
-                    </>
-                  )}
-
                   {!isUpdating && "Save"}
+
+                  {isUpdating && (
+                    <div className="flex items-center justify-center gap-3">
+                      Updating
+                      {" "}
+                      <Spinner size="small" />
+                    </div>
+                  )}
                 </Button.button>
               </div>
             </div>
@@ -319,7 +308,7 @@ export default function Links(): JSX.Element {
                                   <div className="items-center gap-4">
                                     <Button.button
                                       className="p-2 hover:text-primary focus:text-primary"
-                                      title="Delete link"
+                                      title="Duplicate link"
                                       onClick={(): void => handleClickDuplicate(link.id)}
                                     >
                                       <DuplicateIcon className="w-5 h-5" />
@@ -348,18 +337,22 @@ export default function Links(): JSX.Element {
             )}
           </section>
 
-          <section className="flex-1">
+          <section className={links.length > 0 ? "flex-1" : "flex-1 hidden md:block"}>
             <h2 className="font-bold text-2xl text-dark-1">Preview</h2>
 
-            {isLoadingGetLinks ? (
+            {isLoadingGetLinks && (
               <div className="w-full h-32 flex items-center justify-center">
                 <Spinner size="large" className="border-primary" />
               </div>
-            ) : (
+            )}
+
+            {!isLoadingGetLinks && links.length > 0 && (
               <div className="flex flex-col gap-4 p-6 border border-light-3 rounded-lg mt-7">
                 {links.map((link) => {
-                  // eslint-disable-next-line max-len
+                // eslint-disable-next-line max-len
                   const LinkIcon = typeOptions.find((option) => option.value === link.type)?.icon as React.ComponentType<{ className?: string }>;
+
+                  if (!link.isPublished) return null;
 
                   return (
                     <a href={link.url || "#"} key={link.id} className="flex items-center justify-start text-base font-semibold p-4 rounded-lg border border-transparent hover:border-light-3 shadow-md shadow-light-3 gap-6" target="_blank" rel="noreferrer" title={link.url || "Link"}>
@@ -373,6 +366,16 @@ export default function Links(): JSX.Element {
             )}
           </section>
         </div>
+
+        {!isLoadingGetLinks && links.length === 0 && (
+          <section className="flex-1 flex flex-col items-center justify-center mt-4">
+            <img src={Illustration} alt="Illustration" className="w-full max-w-[300px]" />
+            <h2 className="font-bold text-2xl text-dark-1">no link yet</h2>
+            <p>
+              add one, click the + button
+            </p>
+          </section>
+        )}
       </Container>
     </>
   );

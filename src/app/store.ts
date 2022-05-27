@@ -5,6 +5,7 @@ import {
   settingServices,
   imageServices,
   linkServices,
+  variableServices,
 } from "../services";
 
 const rootReducer = combineReducers({
@@ -12,6 +13,7 @@ const rootReducer = combineReducers({
   [settingServices.reducerPath]: settingServices.reducer,
   [imageServices.reducerPath]: imageServices.reducer,
   [linkServices.reducerPath]: linkServices.reducer,
+  [variableServices.reducerPath]: variableServices.reducer,
 });
 
 const store = configureStore({
@@ -23,6 +25,7 @@ const store = configureStore({
     settingServices.middleware,
     imageServices.middleware,
     linkServices.middleware,
+    variableServices.middleware,
   ],
 });
 

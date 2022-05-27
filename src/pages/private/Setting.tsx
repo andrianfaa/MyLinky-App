@@ -2,6 +2,7 @@
 /* eslint-disable jsx-a11y/no-noninteractive-tabindex */
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 import {
+  memo,
   Ref, useEffect, useRef, useState,
 } from "react";
 import type { LoadingBarRef } from "react-top-loading-bar";
@@ -18,8 +19,7 @@ import { Notyf } from "../../helpers";
 import type { SettingResponse } from "../../services";
 import { useGetSettingQuery, useUpdateSettingMutation, useUploadProfilePhotoMutation } from "../../services";
 
-export default function Setting(): JSX.Element {
-  const [isLoading, setLoading] = useState<boolean>(false);
+function Setting(): JSX.Element {
   const [isChanged, setIsChanged] = useState<boolean>(false);
   const [formState, setFormState] = useState<SettingResponse>({
     generalSettings: {
@@ -541,3 +541,7 @@ export default function Setting(): JSX.Element {
     </>
   );
 }
+
+const SettingPage = memo(Setting);
+
+export default SettingPage;

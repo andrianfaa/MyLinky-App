@@ -18,7 +18,7 @@ export function SidebarMenuItem({
 
   return (
     <Link onClick={onClick} to={path} className={`${match ? "bg-primary text-white" : "hover:bg-dark-4 hover:bg-opacity-10"} transition-[background] duration-200 ease-in-out p-4 rounded-lg flex items-center flex-1`}>
-      {Icon && <Icon className="w-6 h-6 mr-3" />}
+      {Icon && <Icon className="w-5 h-5 mr-3" />}
       {" "}
       {label ?? ""}
     </Link>

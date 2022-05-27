@@ -103,10 +103,10 @@ export default function Register(): JSX.Element {
 
     const register = async (): Promise<void> => {
       try {
-        const response = await axios.post(`${config.api.url}/user/register`, formState as RegisterStateProps, {
+        const response = await axios.post(`${config.API.URL}/user/register`, formState as RegisterStateProps, {
           headers: {
             "Content-Type": "application/x-www-form-urlencoded",
-            "x-api-key": config.api.key,
+            "x-api-key": config.API.KEY,
           },
         });
 

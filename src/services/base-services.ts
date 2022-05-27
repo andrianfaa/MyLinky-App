@@ -7,10 +7,10 @@ import { logout } from "../features/auth";
 import { Notyf } from "../helpers";
 
 const baseQuery = fetchBaseQuery({
-  baseUrl: config.api.url,
+  baseUrl: config.API.URL,
   prepareHeaders: async (headers, { getState }) => {
     headers.set("accept", "application/json");
-    headers.set("x-api-key", config.api.key);
+    headers.set("x-api-key", config.API.KEY);
 
     const { token } = (getState() as RootState).auth;
 

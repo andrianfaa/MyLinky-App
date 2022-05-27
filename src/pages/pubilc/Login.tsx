@@ -95,11 +95,11 @@ export default function Login(): JSX.Element {
 
     try {
       const response = await axios<HttpResponse<{ token: string }>>({
-        url: `${config.api.url}/user/login`,
+        url: `${config.API.URL}/user/login`,
         method: "POST",
         headers: {
           "Content-Type": "application/x-www-form-urlencoded",
-          "x-api-key": config.api.key,
+          "x-api-key": config.API.KEY,
         },
         data: formState as LoginStateProps,
       });

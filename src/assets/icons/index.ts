@@ -16,7 +16,6 @@ export { ReactComponent as PlusIcon } from "./ic-plus.svg";
 export { ReactComponent as TrashIcon } from "./ic-trash.svg";
 export { ReactComponent as DuplicateIcon } from "./ic-duplicate.svg";
 export { ReactComponent as QRCodeIcon } from "./ic-qrcode.svg";
-
 export { ReactComponent as GithubIcon } from "./ic-github.svg";
 export { ReactComponent as TwitterIcon } from "./ic-twitter.svg";
 export { ReactComponent as FacebookIcon } from "./ic-facebook.svg";
@@ -24,3 +23,8 @@ export { ReactComponent as InstagramIcon } from "./ic-instagram.svg";
 export { ReactComponent as LinkedinIcon } from "./ic-linkedin.svg";
 export { ReactComponent as MediumIcon } from "./ic-medium.svg";
 export { ReactComponent as WebsiteIcon } from "./ic-website.svg";
+export { ReactComponent as PublishIcon } from "./ic-publish.svg";
+export { ReactComponent as ShareIcon } from "./ic-share.svg";
+
+export { ReactComponent as PublishSuccessIcon } from "./published-successfully.svg";
+export { ReactComponent as PublishFailIcon } from "./published-failed.svg";

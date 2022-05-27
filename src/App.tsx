@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
-import { Route, Routes, useNavigate } from "react-router-dom";
+import {
+  Route, Routes, useNavigate, useLocation,
+} from "react-router-dom";
 import axios from "redaxios";
 
 import { useAppDispatch, useAppSelector } from "./app";
@@ -8,6 +10,7 @@ import { Sidebar, Spinner, Navbar } from "./components/ui";
 import config from "./config";
 import { logout, setAuth } from "./features/auth";
 import { User } from "./features/auth/types";
+import UserPage from "./pages/pubilc/User";
 
 export interface GetProfileSucessResponse {
   uid: string;
@@ -22,6 +25,7 @@ export default function App() {
   const { isAuth, token } = useAppSelector(({ auth }) => auth);
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const sidebarMenu = PrivateRoutes.map((route: RouteConfig) => ({
     icon: route.icon ?? null,
@@ -30,6 +34,8 @@ export default function App() {
   }));
 
   useEffect(() => {
+    if (location.pathname.includes("/u/")) return;
+
     if (!token) {
       setIsLoading(false);
       navigate("/");
@@ -40,17 +46,18 @@ export default function App() {
     const getProfile = async () => {
       try {
         const response = await axios<HttpResponse<GetProfileSucessResponse>>({
-          url: `${config.api.url}/user`,
+          url: `${config.API.URL}/user`,
           method: "get",
           headers: {
             Authorization: `Bearer ${token}`,
-            "x-api-key": config.api.key,
+            "x-api-key": config.API.KEY,
           },
         });
 
         if (response.status === 200 && response.data.status === "success" && response.data.statusCode === 200) {
           dispatch(setAuth(response?.data?.data as User));
           setIsLoading(false);
+          if (location.pathname === "/") navigate("/links");
           return;
         }
 
@@ -68,7 +75,11 @@ export default function App() {
     getProfile();
   }, []);
 
-  if (isLoading) {
+  if (location.pathname.includes("/u/")) {
+    return <UserPage />;
+  }
+
+  if (!location.pathname.includes("/u/") && isLoading) {
     return (
       <div className="h-screen w-full flex items-center justify-center">
         <Spinner className="border-primary w-8 h-8 sm:w-9 sm:h-9" />

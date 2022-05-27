@@ -2,12 +2,11 @@
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 /* eslint-disable react/require-default-props */
-import { useState, useRef } from "react";
+import { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { QRCodeSVG } from "qrcode.react";
-import html2canvas from "html2canvas";
 import { useAppSelector } from "../../../app";
-import { CloseIcon, QRCodeIcon } from "../../../assets/icons";
+import { CloseIcon, PublishIcon, QRCodeIcon } from "../../../assets/icons";
+import { usePublish, useQRCode } from "../../../hooks";
 import type { MenuItem } from "../atom";
 import { Button, SidebarMenuItem, SidebarMenuProfile } from "../atom";
 
@@ -30,20 +29,26 @@ export function Sidebar({
   const isMobile = window.innerWidth <= 768;
   const CLIENT_URL = process.env.REACT_APP_BASE_URL as string || "http://localhost:3000";
 
+  const { QRCodeSVG, downloadQRCode } = useQRCode<HTMLDivElement>(QRCodeRef);
+  const { publish, render: PublishModal } = usePublish();
+
   const handleOnClick = (path: string) => {
     if (setIsSidebarOpen && open) setIsSidebarOpen(false);
     navigate(path);
   };
 
-  const handleDownloadQRCode = async () => {
-    const target = QRCodeRef.current;
-    const canvas = await html2canvas(target as HTMLElement);
-    const link = document.createElement("a");
-
-    link.href = canvas.toDataURL("image/png");
-    link.download = "qrcode.png";
-    link.click();
-  };
+  const additionalMenu = [
+    {
+      icon: PublishIcon,
+      label: "Publish",
+      onClick: publish,
+    },
+    {
+      icon: QRCodeIcon,
+      label: "Scan QR Code",
+      onClick: () => setIsQRCodeOpen(true),
+    },
+  ];
 
   return (
     <>
@@ -64,31 +69,40 @@ export function Sidebar({
 
           <SidebarMenuProfile position="top" />
 
-          <div className="flex flex-col gap-1 p-3">
+          <div className="flex flex-col gap-1 p-1">
             {items.map(({ icon, label, path }) => (
               <SidebarMenuItem onClick={() => handleOnClick(path)} key={path} icon={icon} label={label} path={path} />
             ))}
 
-            <div
-              className="transition-[background] duration-200 ease-in-out p-4 rounded-lg flex items-center flex-1 hover:bg-dark-4 hover:bg-opacity-10 focus:bg-primary focus:text-white cursor-pointer"
-              onClick={() => setIsQRCodeOpen(true)}
-            >
-              <QRCodeIcon className="w-6 h-6 mr-3" />
-              {" "}
-              Scan QR code
-            </div>
+            {additionalMenu.map(({ label, icon, onClick }) => {
+              const Icon = icon;
+
+              return (
+                <div
+                  key={`${label}-${Math.floor(Math.random() * 200030)}`}
+                  className="transition-[background] duration-200 ease-in-out p-4 rounded-lg flex items-center flex-1 hover:bg-dark-4 hover:bg-opacity-10 focus:bg-primary focus:text-white cursor-pointer"
+                  onClick={onClick}
+                >
+                  <Icon className="w-5 h-5 mr-3" />
+                  {" "}
+                  {label}
+                </div>
+              );
+            })}
           </div>
         </div>
 
         <SidebarMenuProfile position="bottom" />
       </div>
 
+      <PublishModal />
+
       {isQRCodeOpen && (
         <div className="fixed z-50 top-0 left-0 w-full h-full flex items-end sm:items-center justify-center bg-black bg-opacity-50" onClick={() => setIsQRCodeOpen(false)}>
-          {/* Downloaded QR Code */}
+          {/* Downloadable QR Code */}
           <div ref={QRCodeRef} className="absolute z-20 -left-[500px] -top-[500px] w-[256px] h-[256px] md:w-[350px] md:h-[350px]">
             <QRCodeSVG
-              value={`${CLIENT_URL}/${user?.username}`}
+              value={`${CLIENT_URL}/u/${user?.username}`}
               size={isMobile ? 256 : 350}
               level="H"
               includeMargin
@@ -102,7 +116,7 @@ export function Sidebar({
 
             <div className="relative flex items-center justify-center">
               <QRCodeSVG
-                value={`${CLIENT_URL}/${user?.username}`}
+                value={`${CLIENT_URL}/u/${user?.username}`}
                 size={isMobile ? 256 : 350}
                 level="H"
                 id="qrcode"
@@ -117,15 +131,15 @@ export function Sidebar({
               <img src={user?.avatar as string} alt="avatar" className="absolute w-[100px] h-[100px] md:w-[150px] md:h-[150px] object-cover" />
             </div>
 
-            <span className="mt-6 block">
+            <a href={`${CLIENT_URL}/u/${user?.username}`} target="_blank" rel="noopener noreferrer" className="mt-6 block link-primary">
               {CLIENT_URL}
-              /
+              /u/
               {user?.username}
-            </span>
+            </a>
 
             <Button.ButtonWithIcon
               className="mt-4 flex items-center justify-center button-base button-primary"
-              onClick={handleDownloadQRCode}
+              onClick={downloadQRCode}
               showIcon
               leftIcon={<QRCodeIcon className="w-6 h-6" />}
               title="Download QR code"

@@ -19,12 +19,12 @@ const PublicRoutes: RouteConfig[] = [
 ];
 
 const PrivateRoutes: RouteConfig[] = [
-  {
-    path: "/",
-    element: Dashboard,
-    name: "Dashboard",
-    icon: FlashIcon,
-  },
+  // {
+  //   path: "/",
+  //   element: Dashboard,
+  //   name: "Dashboard",
+  //   icon: FlashIcon,
+  // },
   {
     path: "/links",
     element: Links,
