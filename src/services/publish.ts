@@ -38,13 +38,17 @@ export const publishServices = {
           avatar: getSetting.publishSettings.profile.showProfilePhoto ? getSetting.generalSettings.profile.avatar ?? getLinky.user.avatar : null,
           bio: getSetting.publishSettings.profile.showProfileBio ? getSetting.generalSettings.profile.bio : null,
         },
-        links: getLinky.links.map((link) => ({
-          id: link.id,
-          url: link.url,
-          title: link.title,
-          type: link.type,
-          isPublished: link.isPublished,
-        })),
+        links: getLinky.links.map((link) => {
+          if (!link.isPublished) return null;
+
+          return {
+            id: link.id,
+            url: link.url,
+            title: link.title,
+            type: link.type,
+            isPublished: link.isPublished,
+          };
+        }).filter((link) => link),
       };
 
       const getPublishedData = await Publish.findOne({ uid });
