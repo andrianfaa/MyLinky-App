@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import { memo } from "react";
 import { useLocation } from "react-router-dom";
 import { Fade } from "react-awesome-reveal";
@@ -12,7 +13,7 @@ import { Container } from "../../components";
 import { Button, Spinner } from "../../components/ui";
 import { useGetUserQuery } from "../../services";
 
-function User() {
+function User(): JSX.Element {
   const { pathname } = useLocation();
   const username = pathname.split("/")[2];
 

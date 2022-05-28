@@ -28,8 +28,6 @@ const authSlice = createSlice({
     }),
 
     logout: (state: InitialState) => {
-      if (state.token) window.location.reload();
-
       LocalStorage.clear();
       SessionStorage.clear();
 

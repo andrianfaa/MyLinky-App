@@ -10,7 +10,10 @@ import { Sidebar, Spinner, Navbar } from "./components/ui";
 import config from "./config";
 import { logout, setAuth } from "./features/auth";
 import { User } from "./features/auth/types";
-import UserPage from "./pages/pubilc/User";
+
+import UserPage from "./pages/public/User";
+import Error404Private from "./pages/private/Error404";
+import Error404Public from "./pages/public/Error404";
 
 export interface GetProfileSucessResponse {
   uid: string;
@@ -36,13 +39,6 @@ export default function App() {
   useEffect(() => {
     if (location.pathname.includes("/u/")) return;
 
-    if (!token) {
-      setIsLoading(false);
-      navigate("/");
-      dispatch(logout());
-      return;
-    }
-
     const getProfile = async () => {
       try {
         const response = await axios<HttpResponse<GetProfileSucessResponse>>({
@@ -63,12 +59,10 @@ export default function App() {
 
         dispatch(logout());
         setIsLoading(false);
-        navigate("/");
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } catch (error: any) {
         dispatch(logout());
         setIsLoading(false);
-        navigate("/");
       }
     };
 
@@ -94,10 +88,13 @@ export default function App() {
 
         <div className="flex-1 h-screen overflow-y-auto">
           <Navbar setIsSidebarOpen={setIsSidebarOpen} isSidebarOpen={isSidebarOpen} />
+
           <Routes>
             {PrivateRoutes.map((route: RouteConfig) => (
               <Route key={route.path} path={route.path} element={<route.element />} />
             ))}
+
+            <Route path="*" element={<Error404Private />} />
           </Routes>
         </div>
       </div>
@@ -109,6 +106,8 @@ export default function App() {
       {PublicRoutes.flatMap((route: RouteConfig) => (
         <Route key={route.path} path={route.path} element={<route.element />} />
       ))}
+
+      <Route path="*" element={<Error404Public />} />
     </Routes>
   );
 }

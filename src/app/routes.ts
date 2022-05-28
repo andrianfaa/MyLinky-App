@@ -1,15 +1,20 @@
-import Login from "../pages/pubilc/Login";
-import Register from "../pages/pubilc/Register";
+import Login from "../pages/public/Login";
+import Register from "../pages/public/Register";
 // Private Pages
-import Dashboard from "../pages/private/Dashboard";
+// import Dashboard from "../pages/private/Dashboard";
 import Setting from "../pages/private/Setting";
 import Links from "../pages/private/Links";
+import LandingPage from "../pages/public/Landing";
 
 import { FlashIcon, SettingIcon, RowIcon } from "../assets/icons";
 
 const PublicRoutes: RouteConfig[] = [
   {
     path: "/",
+    element: LandingPage,
+  },
+  {
+    path: "/login",
     element: Login,
   },
   {

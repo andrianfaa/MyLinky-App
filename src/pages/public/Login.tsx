@@ -1,25 +1,25 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import type { ReactElement } from "react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { Link, useLocation } from "react-router-dom";
 import axios from "redaxios";
-import { Link, useNavigate } from "react-router-dom";
 
-import { Notyf } from "../../helpers";
+import { useAppDispatch } from "../../app";
 import { Container } from "../../components";
 import {
-  Button, Input, Spinner, InputGroup,
+  Button, Input, InputGroup, Spinner,
 } from "../../components/ui";
 import config from "../../config";
-import { emailPattern, passwordPattern, usernamePattern } from "../../constants";
+import { emailPattern, passwordPattern } from "../../constants";
+import { setToken } from "../../features/auth";
+import { Notyf } from "../../helpers";
 
-import { EmailIcon, LockIcon, UserIcon } from "../../assets/icons";
+import { EmailIcon, LockIcon } from "../../assets/icons";
 import { LogoWithText } from "../../assets/images";
 
-export interface RegisterStateProps {
-  username: string;
+export interface LoginStateProps {
   email: string;
   password: string;
-  confirmPassword: string;
 }
 
 export interface FormInput {
@@ -37,26 +37,26 @@ export interface FormInput {
   pattern?: string;
 }
 
-export default function Register(): JSX.Element {
+export default function Login(): JSX.Element {
   const [isLoading, setLoading] = useState<boolean>(false);
-  const [formState, setFormState] = useState<RegisterStateProps>({
-    username: "",
+  const [formState, setFormState] = useState<LoginStateProps>({
     email: "",
     password: "",
-    confirmPassword: "",
   });
 
-  const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+  const location = useLocation() as LocationState<{
+    email: string;
+    password: string;
+  }>;
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
     const { name, value } = event.target;
 
     const testEmail = name === "email" && new RegExp(emailPattern).test(value);
     const testPassword = name === "password" && new RegExp(passwordPattern).test(value);
-    const testUsername = name === "username" && new RegExp(usernamePattern).test(value);
-    const testConfirmPassword = name === "confirmPassword" && value === formState.password;
 
-    if (testEmail || testPassword || testUsername || testConfirmPassword) {
+    if (testEmail || testPassword) {
       event.target.classList.remove("input-error");
     } else {
       event.target.classList.add("input-error");
@@ -72,14 +72,12 @@ export default function Register(): JSX.Element {
     event.preventDefault();
     setLoading(true);
 
-    const testUsername = new RegExp(usernamePattern).test(formState.username);
     const testEmail = new RegExp(emailPattern).test(formState.email);
     const testPassword = new RegExp(passwordPattern).test(formState.password);
-    const testConfirmPassword = formState.password === formState.confirmPassword;
 
-    if (!testUsername) {
+    if (!testEmail && !testPassword) {
       setLoading(false);
-      Notyf.error("Username is not valid, it must be between 3 and 20 characters and can only contain letters, numbers and underscores");
+      Notyf.error("Please enter a valid email and password");
       return;
     }
 
@@ -91,69 +89,49 @@ export default function Register(): JSX.Element {
 
     if (!testPassword) {
       setLoading(false);
-      Notyf.error("Password is not valid, it must be at least 8 characters long and contain at least one number and one uppercase letter");
+      Notyf.error("Password is not valid");
       return;
     }
 
-    if (!testConfirmPassword) {
-      setLoading(false);
-      Notyf.error("Passwords do not match");
-      return;
-    }
+    try {
+      const response = await axios<HttpResponse<{ token: string }>>({
+        url: `${config.API.URL}/user/login`,
+        method: "POST",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+          "x-api-key": config.API.KEY,
+        },
+        data: formState as LoginStateProps,
+      });
 
-    const register = async (): Promise<void> => {
-      try {
-        const response = await axios.post(`${config.API.URL}/user/register`, formState as RegisterStateProps, {
-          headers: {
-            "Content-Type": "application/x-www-form-urlencoded",
-            "x-api-key": config.API.KEY,
-          },
-        });
-
-        if (response.status === 200 && response.data.status === "success" && response.data.statusCode === 200) {
-          setLoading(false);
-          Notyf.success("Registration successful. Please login to continue");
-          setFormState({
-            username: "",
-            email: "",
-            password: "",
-            confirmPassword: "",
-          });
-          navigate("/", {
-            state: {
-              email: formState.email,
-              password: formState.password,
-            },
-          });
-          return;
-        }
-
+      if (response.status === 200 && response.data.status === "success" && response.data.statusCode === 200) {
+        const { token } = response.data?.data as { token: string };
         setLoading(false);
-        Notyf.error("Registration failed");
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      } catch (error: any) {
-        setLoading(false);
-        Notyf.error(error?.message ?? error?.data?.message ?? "Registration failed");
+        dispatch(setToken(token));
+        window.location.href = "/links";
+        return;
       }
-    };
 
-    register();
+      setLoading(false);
+      Notyf.error(response?.data?.message ?? "Login failed");
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      setLoading(false);
+      Notyf.error(error?.message ?? error?.data?.message ?? "Login failed");
+    }
   };
 
+  useEffect(() => {
+    if (location?.state?.email || location?.state?.password) {
+      setFormState((prevState) => ({
+        ...prevState,
+        email: location?.state?.email ?? "",
+        password: location?.state?.password ?? "",
+      }));
+    }
+  }, [location?.state]);
+
   const formInput: FormInput[] = [
-    {
-      name: "username",
-      label: "Username",
-      id: "username",
-      icon: <UserIcon />,
-      type: "text",
-      placeholder: "mylinky_username",
-      onChange: handleChange,
-      required: true,
-      disabled: isLoading,
-      value: formState.username,
-      title: "Enter your username",
-    },
     {
       name: "email",
       label: "Email",
@@ -180,19 +158,6 @@ export default function Register(): JSX.Element {
       disabled: isLoading,
       title: "Enter your password",
     },
-    {
-      name: "confirmPassword",
-      label: "Confirm password",
-      id: "configpassword",
-      icon: <LockIcon />,
-      type: "password",
-      placeholder: "Confirm your password",
-      onChange: handleChange,
-      required: true,
-      value: formState.confirmPassword,
-      disabled: isLoading,
-      title: "Confirm your password",
-    },
   ];
 
   return (
@@ -201,9 +166,9 @@ export default function Register(): JSX.Element {
         <LogoWithText className="scale-150 mx-auto mb-9" />
 
         <div className="flex items-center justify-between mb-6">
-          <h1 className="text-xl font-semibold text-dark-1">Register</h1>
-          <Link to="/" className="link-primary font-medium" title="Login">
-            Login
+          <h1 className="text-xl font-semibold text-dark-1">Login</h1>
+          <Link to="/register" className="link-primary font-medium" title="Register">
+            Register
           </Link>
         </div>
 
@@ -232,29 +197,30 @@ export default function Register(): JSX.Element {
           ))}
 
           <InputGroup.checkbox
-            label="I agree to the terms and conditions"
-            targetId="terms"
+            label="Remember me"
+            targetId="remember-me"
             className="flex items-center gap-2 mb-4"
-            required
           >
             <Input.checkbox
-              name="terms"
-              id="terms"
+              name="remember-me"
+              id="remember-me"
               className="mr-2"
               disabled={isLoading}
-              required
             />
           </InputGroup.checkbox>
 
           <Button.submit
             className="button-base button-primary mb-4 w-full flex justify-center items-center"
             disabled={isLoading}
-            title={isLoading ? "Loading..." : "Register"}
+            title={isLoading ? "Loading..." : "Login"}
           >
-            {isLoading ? <Spinner className="w-8 h-8" /> : "Register"}
+            {isLoading ? <Spinner /> : "Login"}
           </Button.submit>
         </form>
 
+        <Link to="/forgot-password" className="link-primary font-medium">
+          Forgot password?
+        </Link>
       </div>
     </Container>
   );

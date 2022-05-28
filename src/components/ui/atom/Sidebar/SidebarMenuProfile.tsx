@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../../../../app";
 import { LogoutIcon } from "../../../../assets/icons";
 import { logout } from "../../../../features/auth";
@@ -9,6 +10,7 @@ export function SidebarMenuProfile({
 }: SidebarMenuProfileProps): JSX.Element {
   const { user } = useAppSelector(({ auth }) => auth);
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
 
   return (
     <div className={`${position === "top" ? "md:hidden flex" : "hidden md:flex border-t border-t-light-3"} items-center px-3 py-4 `}>
@@ -26,6 +28,7 @@ export function SidebarMenuProfile({
         className="ml-auto"
         onClick={() => {
           dispatch(logout());
+          navigate("/login");
         }}
         title="Logout"
       >
