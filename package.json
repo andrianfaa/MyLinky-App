@@ -6,7 +6,7 @@
   "scripts": {
     "start-dev": "cross-env NODE_ENV=development nodemon server.ts",
     "start": "NODE_ENV=production node dist/server.js",
-    "build": "tsc -p tsconfig.json && cp -r ./src/config/.env.production ./dist/src/config/.env.production",
+    "build": "tsc -p tsconfig.json && cp -r ./src/config/.env.production ./dist/src/config/.env.production && cp ./serviceAccountKey.json ./dist",
     "commit": "git add . && lint-staged && cz",
     "postinstall": "npm install commitizen --save-dev && npm run commit"
   },

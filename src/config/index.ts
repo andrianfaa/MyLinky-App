@@ -7,9 +7,9 @@ dotenv.config({
 });
 
 const config = {
-  port: Number(process.env.API_PORT) ?? 8080,
+  port: process.env.PORT ?? 5000,
   secret: process.env.API_SECRET as string,
-  url: process.env.API_URL as string ?? `http://localhost:8080/api/${process.env.API_VERSION as string ?? "v1"}`,
+  url: `${process.env.API_URL as string || "http://localhost:5000"}/api/${process.env.API_VERSION as string ?? "v1"}`,
   // Api
   api: {
     key: process.env.API_KEY as string,
