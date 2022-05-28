@@ -88,7 +88,7 @@ function User(): JSX.Element {
   }
 
   return (
-    <Container className="px-6 py-10 flex flex-col items-center justify-center min-h-screen bg-light-2">
+    <Container className="px-6 py-16 flex flex-col items-center justify-center min-h-screen bg-light-2">
       {data?.data && (
         <div className="flex flex-col justify-start items-center w-full max-w-[500px] relative">
 
@@ -127,7 +127,7 @@ function User(): JSX.Element {
           </Fade>
 
           <section id="links" className="flex flex-col gap-4 w-full mt-10">
-            <Fade cascade direction="up" duration={750} delay={250}>
+            <Fade cascade direction="up" duration={750} delay={250} triggerOnce>
               {data?.data?.links && data?.data?.links.length > 0 && (
                 data?.data?.links.map((link) => {
                 // eslint-disable-next-line max-len
